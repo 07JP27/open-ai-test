@@ -1,0 +1,146 @@
+
+@aoaiName = {your-aoai-resource-name}
+@deployment = {your-aoai-deployment-name}
+@apikey = {your-aoai-api-key}
+
+// Function呼び出しが返ってくるパターン
+POST https://{{aoaiName}}.openai.azure.com/openai/deployments/{{deployment}}/chat/completions?api-version=2023-07-01-preview
+Content-Type: application/json
+api-key: {{apikey}}
+
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "今日の夕食は外食にしようと思ったけど、大根が余っているからぶり大根を作ろうかな。"
+        }
+    ],
+    "functions":[
+        {
+            "name": "get_recipe",
+            "description": "与えられた料理のレシピを取得します。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "food": {
+                        "type": "string",
+                        "description": "レシピを検索する料理、例：ポトフ、ピラフ"
+                    }
+                },
+                "required": ["food"]
+            }
+        }
+    ],
+    "function_call":"auto"
+}
+
+###
+// Function呼び出しに対して、Functionの戻り値を渡すパターン
+POST https://{{aoaiName}}.openai.azure.com/openai/deployments/{{deployment}}/chat/completions?api-version=2023-07-01-preview
+Content-Type: application/json
+api-key: {{apikey}}
+
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "今日の夕食は外食にしようと思ったけど、大根が余っているからぶり大根を作ろうかな。"
+        },
+        {
+            "role": "function",
+            "name": "get_recipe",
+            "content": "ぶりを切って煮て、大根と一緒に醤油、みりん、砂糖、酒で味付け。柔らかくなるまで煮る。"
+        }
+    ],
+    "functions":[
+        {
+            "name": "get_recipe",
+            "description": "与えられた料理のレシピを取得します。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "food": {
+                        "type": "string",
+                        "description": "レシピを検索する料理、例：ポトフ、ピラフ"
+                    }
+                },
+                "required": ["food"]
+            }
+        }
+    ],
+    "function_call":"auto"
+}
+
+###
+// Function呼び出しが返ってこないパターン
+POST https://{{aoaiName}}.openai.azure.com/openai/deployments/{{deployment}}/chat/completions?api-version=2023-07-01-preview
+Content-Type: application/json
+api-key: {{apikey}}
+
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "今日の夕食は外食にしようかな。"
+        }
+    ],
+    "functions":[
+        {
+            "name": "get_recipe",
+            "description": "与えられた料理のレシピを取得します。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "food": {
+                        "type": "string",
+                        "description": "レシピを検索する料理、例：ポトフ、ピラフ"
+                    }
+                },
+                "required": ["food"]
+            }
+        }
+    ],
+    "function_call":"auto"
+}
+
+
+
+###
+// 多段階で会話した後にFunction呼び出しが返ってくるパターン
+POST https://{{aoaiName}}.openai.azure.com/openai/deployments/{{deployment}}/chat/completions?api-version=2023-07-01-preview
+Content-Type: application/json
+api-key: {{apikey}}
+
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "レシピを調べたいな"
+        },
+        {
+            "role": "assistant",
+            "content": "どの料理のレシピを調べたいですか？"
+        },
+        {
+            "role": "user",
+            "content": "ぶり大根"
+        }
+    ],
+    "functions":[
+        {
+            "name": "get_recipe",
+            "description": "与えられた料理のレシピを取得します。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "food": {
+                        "type": "string",
+                        "description": "レシピを検索する料理、例：ポトフ、ピラフ"
+                    }
+                },
+                "required": ["food"]
+            }
+        }
+    ],
+    "function_call":"auto"
+}
