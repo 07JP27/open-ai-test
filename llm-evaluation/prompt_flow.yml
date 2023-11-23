@@ -1,0 +1,67 @@
+id: template_eval_flow
+name: Template Evaluation Flow
+inputs:
+  content:
+    type: string
+    is_chat_input: false
+  system:
+    type: string
+    default: You are my friend.
+    is_chat_input: false
+outputs:
+  results:
+    type: string
+    reference: ${Target.output}
+nodes:
+- name: Target
+  use_variants: true
+node_variants:
+  Target:
+    default_variant_id: variant_0
+    variants:
+      variant_0:
+        node:
+          name: Target
+          type: llm
+          source:
+            type: code
+            path: Target.jinja2
+          inputs:
+            deployment_name: [デプロイ名]
+            temperature: 0
+            top_p: 1
+            stop: ""
+            max_tokens: 0
+            presence_penalty: 0
+            frequency_penalty: 0
+            logit_bias: ""
+            question: ${inputs.content}
+            system: ${inputs.system}
+          provider: AzureOpenAI
+          connection: [接続名]
+          api: chat
+          module: promptflow.tools.aoai
+      variant_1:
+        node:
+          name: Target
+          type: llm
+          source:
+            type: code
+            path: Target__variant_1.jinja2
+          inputs:
+            deployment_name: [デプロイ名]
+            temperature: 0
+            top_p: 1
+            stop: ""
+            max_tokens: 0
+            presence_penalty: 0
+            frequency_penalty: 0
+            logit_bias: ""
+            question: ${inputs.content}
+            system: ${inputs.system}
+          provider: AzureOpenAI
+          connection: [接続名]
+          api: chat
+          module: promptflow.tools.aoai
+environment:
+  python_requirements_txt: requirements.txt
